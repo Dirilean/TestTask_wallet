@@ -1,5 +1,9 @@
-﻿public enum CurrencyType
+﻿namespace WalletModule
 {
-    gold,
-    diamond
+    public enum CurrencyType
+    {
+        silver,
+        gold,
+        diamond,
+    }
 }
