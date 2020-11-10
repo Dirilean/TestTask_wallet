@@ -13,14 +13,18 @@ namespace WalletModule
         public Action<CurrencyType, uint> changingCurrencyAmount;
         public Dictionary<CurrencyType, uint> Wallet { get; private set; }
 
+
         //Settings -----------------------------------------------------------------------------------------------
         [Header("Saving Settings")]
         public bool saveInFile = true;
-        public bool binFormatForSave=false;
         [Space]
         public bool saveOnServer = true;
         [Header("Debug settings")]
         public bool debug=true;
+       
+
+        //Private ------------------------------------------------------------------------------------------------
+        private SavingWalletData savingModule = new SavingWalletData();
 
         void Awake()
         {
@@ -43,7 +47,7 @@ namespace WalletModule
 
         private void Start()
         {
-            LoadCurrencyAmount();
+            //LoadCurrencyAmount();
         }
 
         #region WalletOperations ------------------------------------------------------------------------------------------
@@ -57,7 +61,7 @@ namespace WalletModule
         {
             Wallet[type] += amount;
             if (debug) print(amount+" "+type.ToString()+" added: " + WalletCash());
-            SaveCurrencyAmount();
+            savingModule.needSaving.Invoke(Wallet);
         }
 
         /// <summary>
@@ -73,62 +77,22 @@ namespace WalletModule
             {
                 Wallet[type] -= price;
                 OnSuccess.Invoke();
-                SaveCurrencyAmount();
+                savingModule.needSaving.Invoke(Wallet);
             }
             else
             {
                 OnDecline.Invoke();
             }
         }
-
-
         #endregion
 
-        #region Saving ----------------------------------------------------------------------------------------------------
-
-        /// <summary>
-        /// Get local saved amount currency value
-        /// </summary>
-        public void LoadCurrencyAmount()
-        {
-            for (int i = 0; i < Enum.GetNames(typeof(CurrencyType)).Length; i++)
-            {
-                Wallet[(CurrencyType)i] = Convert.ToUInt32(PlayerPrefs.GetString(((CurrencyType)i).ToString(),"2"));
-            }
-            if (debug) print("Loaded: "+ WalletCash());  
-        }
-
-        /// <summary>
-        /// Save amount value on local device and other devices by wallet settings
-        /// </summary>
-        public void SaveCurrencyAmount()
-        {
-            foreach (KeyValuePair<CurrencyType, uint> cur in Wallet)
-            {
-                PlayerPrefs.SetString(cur.Key.ToString(), cur.Value.ToString());
-            }
-            if (saveInFile) SaveInFile();
-            if (saveOnServer) SaveOnServer();
-            if (debug) print("Saved: " + WalletCash());
-        }
-
-        public void SaveInFile()
-        {
-
-        }
-        public void SaveOnServer()
-        {
-            StartCoroutine(Server.Post(Server.Api.walletSaving, JsonUtility.ToJson(Wallet),
-                delegate (UnityWebRequest www) { print(www); },
-                delegate { print("serverError"); }));
-        }
 
         /// <summary>
         /// Сохранение изменений
         /// </summary>
         /// <param name="type"></param>
         /// <param name="amount"></param>
-        public void ChangingCurrencyAmount(CurrencyType type, uint amount) => SaveCurrencyAmount();
+        public void ChangingCurrencyAmount(CurrencyType type, uint amount) => savingModule.needSaving.Invoke(Wallet);
 
         /// <summary>
         /// Current cash amount
@@ -136,10 +100,7 @@ namespace WalletModule
         /// <returns></returns>
         public string WalletCash()
         {
-            return (String.Join(", ", Wallet));
+            return WalletSerialization.DictionaryToString(Wallet);
         }
-        #endregion
-
     }
-
 }
