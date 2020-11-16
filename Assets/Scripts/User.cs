@@ -1,38 +1,67 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using WalletModule;
 
 public class User : MonoBehaviour
 {
-    WaitForSeconds waitingTime = new WaitForSeconds(3f);
-    private IEnumerator Start()
+    PlayerWallet wallet;
+    public void Start()
     {
-        yield return waitingTime;
-        PlayerWallet.instance.AddCurrencyAmount(CurrencyType.gold, 17);
-        PlayerWallet.instance.AddCurrencyAmount(CurrencyType.diamond, 52);
-        //yield return waitingTime;
-        //PlayerWallet.instance.Buy(CurrencyType.gold, 10, delegate { print("Покупка проведена успешно"); }, delegate { print("Недостаточно средств"); });
-        //yield return waitingTime;
-        //PlayerWallet.instance.Buy(CurrencyType.diamond, 10, delegate { print("Покупка проведена успешно"); }, delegate { print("Недостаточно средств"); });
-        //yield return waitingTime;
-        //PlayerWallet.instance.AddCurrencyAmount(CurrencyType.silver, 36);
+        wallet = PlayerWallet.instance;
+    }
+    public void AddGold(int amount)
+    {
+        wallet.AddCurrencyAmount(CurrencyType.gold, (uint)amount);
+    }
+    public void AddDiamond(int amount)
+    {
+        wallet.AddCurrencyAmount(CurrencyType.diamond, (uint)amount);
+    }
+    public void AddSilver(int amount)
+    {
+        wallet.AddCurrencyAmount(CurrencyType.silver, (uint)amount);
+    }
 
-        //var str=( WalletSerialization.DictionaryToString());
-        // SoapFormatter sf = new SoapFormatter();
-        //using (Stream stream = File.Create("test.txt"))
-        //{
-        //    sf.Serialize(stream, PlayerWallet.instance);
-        //}
-        //Dictionary<CurrencyType, uint> pairs1;
-        //using (Stream stream = File.OpenRead("test.txt"))
-        //{
-        //    pairs1 = (Dictionary<CurrencyType, uint>)sf.Deserialize(stream);
-        //}    
+    public void BuyByGold(int amount)
+    {
+        wallet.Buy(CurrencyType.gold, (uint)amount, () => Debug.Log("you buy item by " + amount), () => Debug.LogError("You cant buy it. It too expensive"));
+    }
+    public void BuyByDiamond(int amount)
+    {
+        wallet.Buy(CurrencyType.diamond, (uint)amount, () => Debug.Log("you buy item by " + amount), () => Debug.LogError("You cant buy it. It too expensive"));
+    }
+    public void BuyBySilver(int amount)
+    {
+        wallet.Buy(CurrencyType.silver, (uint)amount, () => Debug.Log("you buy item by " + amount), () => Debug.LogError("You cant buy it. It too expensive"));
+    }
 
-        //string str = WalletSerialization.DictionaryToString(PlayerWallet.instance.Wallet);
-        //Dictionary<CurrencyType, uint> w = new Dictionary<CurrencyType, uint>();
-        //w = WalletSerialization.StringToDictionary(str);
+    public bool SaveInFile
+    {
+        get{ return wallet.savingModule.SavingInFile; }
+        set{ wallet.savingModule.SavingInFile = value; }
+    }
+    public bool SaveInBinFile
+    {
+        get { return wallet.savingModule.SavingInBinFile; }
+        set { wallet.savingModule.SavingInBinFile = value; }
+    }
+    public bool SaveInPlayerPrefs
+    {
+        get { return wallet.savingModule.SavingInPlayerPrefs; }
+        set { wallet.savingModule.SavingInPlayerPrefs = value; }
+    }
+
+    public void ClearSavedData()
+    {
+        SavingWalletData.ClearAllSavedData();
+    }
+
+
+    public void CreateAndLoadNewWallet(int loadWay)
+    {
+        wallet.CreateWallet((SavingWalletData.LoadingPreset)loadWay);
     }
 }
 

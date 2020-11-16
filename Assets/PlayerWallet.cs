@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using static WalletModule.SavingWalletData;
 
 namespace WalletModule
 {
@@ -12,19 +13,13 @@ namespace WalletModule
         public static PlayerWallet instance;
         public Action<CurrencyType, uint> changingCurrencyAmount;
         public Dictionary<CurrencyType, uint> Wallet { get; private set; }
+        public SavingWalletData savingModule;
 
 
         //Settings -----------------------------------------------------------------------------------------------
-        [Header("Saving Settings")]
-        public bool saveInFile = true;
-        [Space]
-        public bool saveOnServer = true;
         [Header("Debug settings")]
         public bool debug=true;
-       
 
-        //Private ------------------------------------------------------------------------------------------------
-        private SavingWalletData savingModule = new SavingWalletData();
 
         void Awake()
         {
@@ -35,19 +30,30 @@ namespace WalletModule
             else
             {
                 instance = this;
-                Wallet = new Dictionary<CurrencyType, uint>();
+                CreateWallet();
+            }
+        }
+
+        public void CreateWallet(SavingWalletData.LoadingPreset loadedPreset = LoadingPreset.PlayerPrefs, bool _savingInPlayerPrefs = true, bool _savingInFile = false, bool _savingInBinFile = false)
+        {
+            savingModule = new SavingWalletData();
+            Dictionary<CurrencyType, uint> newWallet = new Dictionary<CurrencyType, uint>();
+            savingModule.LoadWay.Invoke(out newWallet);
+            if (newWallet.Count==0)
+            {
                 for (int i = 0; i < Enum.GetNames(typeof(CurrencyType)).Length; i++)
                 {
-                    Wallet.Add((CurrencyType)i, 0);
+                    newWallet.Add((CurrencyType)i, 0);
                 }
-                if (debug) print("Created: " + WalletCash());
-                changingCurrencyAmount += ChangingCurrencyAmount;
             }
+            Wallet = newWallet;
+            if (debug) print("Created: " + WalletCash());
+            changingCurrencyAmount += ChangingCurrencyAmount;
         }
 
         private void Start()
         {
-            //LoadCurrencyAmount();
+            if (savingModule.needSaving != null) savingModule.needSaving.Invoke(Wallet);
         }
 
         #region WalletOperations ------------------------------------------------------------------------------------------
@@ -61,7 +67,7 @@ namespace WalletModule
         {
             Wallet[type] += amount;
             if (debug) print(amount+" "+type.ToString()+" added: " + WalletCash());
-            savingModule.needSaving.Invoke(Wallet);
+            if (savingModule.needSaving!=null) savingModule.needSaving.Invoke(Wallet);
         }
 
         /// <summary>
@@ -77,7 +83,7 @@ namespace WalletModule
             {
                 Wallet[type] -= price;
                 OnSuccess.Invoke();
-                savingModule.needSaving.Invoke(Wallet);
+                if (savingModule.needSaving != null) savingModule.needSaving.Invoke(Wallet);
             }
             else
             {
