@@ -1417,6 +1417,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 496831776}
   m_CullTransparentMesh: 0
+--- !u!114 &525780363 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3876719140401487987, guid: 6ed9b7cd3a3a36e428a46b5f7a7fbec2,
+    type: 3}
+  m_PrefabInstance: {fileID: 767339394}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &531225848
 GameObject:
   m_ObjectHideFlags: 0
@@ -2528,7 +2540,7 @@ PrefabInstance:
     - target: {fileID: 3876719140401487987, guid: 6ed9b7cd3a3a36e428a46b5f7a7fbec2,
         type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: set_SaveInBinFile
+      value: set_SaveOnServer
       objectReference: {fileID: 0}
     - target: {fileID: 3876719140401487987, guid: 6ed9b7cd3a3a36e428a46b5f7a7fbec2,
         type: 3}
@@ -4453,6 +4465,7 @@ MonoBehaviour:
   toggle_playerPrefs: {fileID: 1578633511}
   toggle_file: {fileID: 1612512738}
   toggle_binFile: {fileID: 629618908}
+  toggle_server: {fileID: 525780363}
 --- !u!114 &1612512738 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3876719140401487987, guid: 6ed9b7cd3a3a36e428a46b5f7a7fbec2,
