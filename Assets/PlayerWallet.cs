@@ -13,7 +13,7 @@ namespace WalletModule
         public static PlayerWallet instance;
         public Action<CurrencyType, uint> changingCurrencyAmount;
         public Dictionary<CurrencyType, uint> Wallet { get; private set; }
-        public SavingWalletData savingModule;
+        public SavingWalletData savingModule=new SavingWalletData();
 
 
         //Settings -----------------------------------------------------------------------------------------------
@@ -36,7 +36,7 @@ namespace WalletModule
 
         public void CreateWallet(SavingWalletData.LoadingPreset loadedPreset = LoadingPreset.PlayerPrefs, bool _savingInPlayerPrefs = true, bool _savingInFile = false, bool _savingInBinFile = false)
         {
-            savingModule = new SavingWalletData();
+            savingModule = new SavingWalletData( _savingInPlayerPrefs ,  _savingInFile ,  _savingInBinFile, loadedPreset);
             Dictionary<CurrencyType, uint> newWallet = new Dictionary<CurrencyType, uint>();
             savingModule.LoadWay.Invoke(out newWallet);
             if (newWallet.Count==0)

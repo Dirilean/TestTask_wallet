@@ -3,16 +3,27 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using WalletModule;
+using System.IO;
 
 public class User : MonoBehaviour
 {
     PlayerWallet wallet;
     public Text[] textCurrency;
+    public Dropdown loadingWay;
+    public Toggle toggle_playerPrefs;
+    public Toggle toggle_file;
+    public Toggle toggle_binFile;
 
-    public void Start()
+
+    public IEnumerator Start()
     {
         wallet = PlayerWallet.instance;
         wallet.savingModule.needSaving += ChangeWalletValue;
+        ChangeWalletValue(wallet.Wallet);
+        yield return null;
+        toggle_playerPrefs.isOn = wallet.savingModule.SavingInPlayerPrefs;
+        toggle_file.isOn = wallet.savingModule.SavingInFile;
+        toggle_binFile.isOn = wallet.savingModule.SavingInBinFile;
     }
     void ChangeWalletValue(Dictionary<CurrencyType, uint> dictionary)
     {
@@ -68,9 +79,38 @@ public class User : MonoBehaviour
         SavingWalletData.ClearAllSavedData();
     }
 
+    public void OpenFile()
+    {
+        wallet.savingModule.OpenFile();
+    }    
+    public void OpenBinFile()
+    {
+        wallet.savingModule.OpenBinFile();
+    }
+
     public void CreateAndLoadNewWallet(int loadWay)
     {
-        wallet.CreateWallet((SavingWalletData.LoadingPreset)loadWay);
+        wallet.savingModule.needSaving -= ChangeWalletValue;
+        Destroy(wallet);
+        StartCoroutine(CreateNewWallet(loadWay));
+    }
+    IEnumerator CreateNewWallet(int loadWay)
+    {
+        yield return null;
+        GameObject newWallet = GameObject.Find("Wallet");
+        if (newWallet == null) newWallet = new GameObject("Wallet");
+        wallet = newWallet.AddComponent<PlayerWallet>();
+        yield return null;
+        wallet.savingModule = new SavingWalletData(toggle_playerPrefs.isOn, toggle_file.isOn, toggle_binFile.isOn, (SavingWalletData.LoadingPreset)loadWay);
+        wallet.savingModule.needSaving += ChangeWalletValue;
+        ChangeWalletValue(wallet.Wallet);
+        toggle_playerPrefs.isOn = wallet.savingModule.SavingInPlayerPrefs;
+        toggle_file.isOn = wallet.savingModule.SavingInFile;
+        toggle_binFile.isOn = wallet.savingModule.SavingInBinFile;
+    }
+    public void CreateWalletButton()
+    {
+        CreateAndLoadNewWallet(loadingWay.value);
     }
 }
 

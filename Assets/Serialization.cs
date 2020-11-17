@@ -16,10 +16,6 @@ namespace WalletModule
 
         public static byte[] DictionaryToBin<K, V>(Dictionary<K, V> dictionary)
         {
-            //try it
-            //string str="";
-            //BinaryFormatter binaryFormatter = new BinaryFormatter();
-            //binaryFormatter.Serialize()
             return System.Text.Encoding.Unicode.GetBytes(DictionaryToString(dictionary));
         }
 
@@ -51,22 +47,5 @@ namespace WalletModule
             }
             return dictionary;
         }
-
-        //may be it will usable
-        //public static void DictionaryToFile<K,V>(Dictionary<K, V> dictionary, string fileName= "test.txt")
-        //{
-        //    SoapFormatter sf = new SoapFormatter();
-        //    using (Stream stream = File.Create(fileName))
-        //    {
-        //        sf.Serialize(stream, dictionary);
-        //    }
-        //}
-        //public static void ToDictionary()
-        //{
-        //    using (Stream stream = File.OpenRead("test.txt"))
-        //    {
-        //        Dictionary<int, string> pairs1 = (Dictionary<int, string>)sf.Deserialize(stream);
-        //    }
-        //}
     }
 }

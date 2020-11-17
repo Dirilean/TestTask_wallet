@@ -25,6 +25,7 @@ namespace WalletModule
                     needSaving += SaveInPlayerPrefs;
                 else
                     needSaving -= SaveInPlayerPrefs;
+                Debug.Log("SavingInPlayerPrefs= "+value);
             }
         }
         public bool SavingInFile
@@ -36,6 +37,7 @@ namespace WalletModule
                     needSaving += SaveInFile;
                 else
                     needSaving -= SaveInFile;
+                Debug.Log("SavingInFile= " + value);
             }
         }
         public bool SavingInBinFile
@@ -47,6 +49,7 @@ namespace WalletModule
                     needSaving += SaveBinaryInFile;
                 else
                     needSaving -= SaveBinaryInFile;
+                Debug.Log("SavingInBinFile= " + value);
             }
         }
 
@@ -84,7 +87,7 @@ namespace WalletModule
             loadedWallet = new Dictionary<CurrencyType, uint>();
             for (int i = 0; i < Enum.GetNames(typeof(CurrencyType)).Length; i++)
             {
-                loadedWallet[(CurrencyType)i] = Convert.ToUInt32(PlayerPrefs.GetString(((CurrencyType)i).ToString(), "2"));
+                loadedWallet[(CurrencyType)i] = Convert.ToUInt32(PlayerPrefs.GetString(((CurrencyType)i).ToString(), "0"));
             }
             if (debug) Debug.Log("Loaded from PlayerPrefs");
         }
@@ -183,6 +186,8 @@ namespace WalletModule
         }
         #endregion
 
+
+        #region Cleaning------------------------------------------------------------------------------
         public static void ClearPlayerPrefs()
         {
             for (int i = 0; i < Enum.GetNames(typeof(CurrencyType)).Length; i++)
@@ -202,12 +207,24 @@ namespace WalletModule
             Debug.Log("File on " + filePathBin + " was deleted");
             
         }
-
         public static void ClearAllSavedData()
         {
             ClearPlayerPrefs();
             ClearFile();
             ClearBinFile();
         }
+        #endregion
+
+
+        #region OpenFiles -----------------------------------------------------------------------------
+        public void OpenFile()
+        {
+            Application.OpenURL(filePath);
+        }
+        public void OpenBinFile()
+        {
+            Application.OpenURL(filePathBin);
+        }
+        #endregion
     }
 }
