@@ -1,4 +1,6 @@
 # TestTask_wallet
+task done
+Dopwnload for unity package: https://github.com/Dirilean/WalletModule
 
 Реализовать модуль для работы с кошельком пользователя, позволяющий:
 - Получать информацию о балансе доступных валют.
