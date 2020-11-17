@@ -7,9 +7,19 @@ using WalletModule;
 public class User : MonoBehaviour
 {
     PlayerWallet wallet;
+    public Text[] textCurrency;
+
     public void Start()
     {
         wallet = PlayerWallet.instance;
+        wallet.savingModule.needSaving += ChangeWalletValue;
+    }
+    void ChangeWalletValue(Dictionary<CurrencyType, uint> dictionary)
+    {
+        for (int i = 0; i < textCurrency.Length; i++)
+        {
+            textCurrency[i].text = dictionary[(CurrencyType)i].ToString();
+        }
     }
     public void AddGold(int amount)
     {
@@ -57,7 +67,6 @@ public class User : MonoBehaviour
     {
         SavingWalletData.ClearAllSavedData();
     }
-
 
     public void CreateAndLoadNewWallet(int loadWay)
     {
